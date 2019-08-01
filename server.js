@@ -5,9 +5,7 @@ import {config} from 'dotenv';
 import path from 'path';
 import cookieParser from 'cookie-parser';
 import formData from 'express-form-data';
-import bodyParser from 'body-parser';
-
-
+import bodyParser from 'body-parser'
 const app = express();
 const port = process.env.PORT || 5000;
 db();
