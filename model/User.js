@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 import bcript from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import {config} from 'dotenv';
+import {errorResponse, successResponse} from "../utils";
 
 const {ROLE_DEFAULT} = require("../constants");
 
@@ -29,14 +30,19 @@ const userSchema = new mongoose.Schema({
 		required: true,
 		minLength: 5
 	},
+	avatar: {
+		type: String,
+		default: null
+	},
 	role: {
 		type: Number,
-		default: ROLE_DEFAULT
+		default: ROLE_DEFAULT,
+		enum: [0, 1, 2]
 	},
 	token: {
 		type: String
-	}
-
+	},
+	createdAt: {type: Date, default: Date.now}
 });
 userSchema.pre('save', function (next) {
 	if (this.isModified('password')) {
@@ -83,6 +89,41 @@ userSchema.statics.findByToken = function (token, callback) {
 			callback(null, user)
 		})
 	});
+};
+
+userSchema.statics.getPages = function (params, callback) {
+	let {page, rows, sort} = params;
+	page = +page;
+	rows = +rows;
+	User.find({}, {
+		email: 1,
+		login: 1,
+		role: 1,
+		avatar: 1,
+		active: 1,
+		_id: 1,
+		name: 1,
+		createdAt: 1
+	})
+		.sort({[sort]: 1})
+		.skip(page * rows)
+		.limit(rows)
+		.exec((err, docs) => {
+			User.count().exec(function (err, count) {
+				if (err) callback(err);
+				callback(err, {
+					items: docs,
+					count: count,
+					rows: rows,
+					page: page,
+					sort: sort,
+				})
+			})
+		})
+
+};
+userSchema.statics.createMany = function (data, callback) {
+	User.collection.insert(data, callback)
 };
 const User = mongoose.model('User', userSchema);
 export default User
