@@ -1,5 +1,5 @@
 import { COOKIE_TOKEN } from '../constants';
-import User from '../model/User';
+import User from '../models/User';
 
 const auth = (req, res, next) => {
     let token = req.cookies[COOKIE_TOKEN];

@@ -9,6 +9,9 @@ import bodyParser from 'body-parser'
 const app = express();
 const port = process.env.PORT || 5000;
 db();
+
+import controller from './controllers/controller';
+
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
@@ -17,7 +20,6 @@ config();
 app.use(express.static(path.join(__dirname, '/client/build')));
 app.use('/media', express.static('media'));
 routes(app);
-
 app.get('*', (req, res) => {
 	res.sendFile(path.join(__dirname + '/views/index.html'));
 });
